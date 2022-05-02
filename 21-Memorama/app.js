@@ -1,87 +1,116 @@
-document.addEventListener('DOMContentLoaded' , () => {
-    const bird = document.querySelector('.bird')
-    const gameDisplay = document.querySelector('.game-container')
-    const ground = document.querySelector('.ground-moving')
-
-    let birdLeft = 220
-    let birdBottom = 100
-    let gravity = 3
-    let isGameOver = false
-    let gap = 430
-
-
-    function startGame() {
-        birdBottom -= gravity
-        bird.style.bottom = birdBottom + 'px'
-        bird.style.left = birdLeft + 'px'
+document.addEventListener('DOMContentLoaded', () => {
+    //card options
+    const cardArray = [
+      {
+        name: 'fries',
+        img: 'images/fries.png'
+      },
+      {
+        name: 'cheeseburger',
+        img: 'images/cheeseburger.png'
+      },
+      {
+        name: 'ice-cream',
+        img: 'images/ice-cream.png'
+      },
+      {
+        name: 'pizza',
+        img: 'images/pizza.png'
+      },
+      {
+        name: 'milkshake',
+        img: 'images/milkshake.png'
+      },
+      {
+        name: 'hotdog',
+        img: 'images/hotdog.png'
+      },
+      {
+        name: 'fries',
+        img: 'images/fries.png'
+      },
+      {
+        name: 'cheeseburger',
+        img: 'images/cheeseburger.png'
+      },
+      {
+        name: 'ice-cream',
+        img: 'images/ice-cream.png'
+      },
+      {
+        name: 'pizza',
+        img: 'images/pizza.png'
+      },
+      {
+        name: 'milkshake',
+        img: 'images/milkshake.png'
+      },
+      {
+        name: 'hotdog',
+        img: 'images/hotdog.png'
+      }
+    ]
+  
+    cardArray.sort(() => 0.5 - Math.random())
+  
+    const grid = document.querySelector('.grid')
+    const resultDisplay = document.querySelector('#result')
+    let cardsChosen = []
+    let cardsChosenId = []
+    let cardsWon = []
+  
+    //create your board
+    function createBoard() {
+      for (let i = 0; i < cardArray.length; i++) {
+        const card = document.createElement('img')
+        card.setAttribute('src', 'images/blank.png')
+        card.setAttribute('data-id', i)
+        card.addEventListener('click', flipCard)
+        grid.appendChild(card)
+      }
     }
-    let gameTimerId = setInterval(startGame, 20)
-
-    function control(e) {
-        if (e.keyCode === 32) {
-            jump()
-        }
+  
+    //check for matches
+    function checkForMatch() {
+      const cards = document.querySelectorAll('img')
+      const optionOneId = cardsChosenId[0]
+      const optionTwoId = cardsChosenId[1]
+      
+      if(optionOneId == optionTwoId) {
+        cards[optionOneId].setAttribute('src', 'images/blank.png')
+        cards[optionTwoId].setAttribute('src', 'images/blank.png')
+        alert('You have clicked the same image!')
+      }
+      else if (cardsChosen[0] === cardsChosen[1]) {
+        alert('You found a match')
+        cards[optionOneId].setAttribute('src', 'images/white.png')
+        cards[optionTwoId].setAttribute('src', 'images/white.png')
+        cards[optionOneId].removeEventListener('click', flipCard)
+        cards[optionTwoId].removeEventListener('click', flipCard)
+        cardsWon.push(cardsChosen)
+      } else {
+        cards[optionOneId].setAttribute('src', 'images/blank.png')
+        cards[optionTwoId].setAttribute('src', 'images/blank.png')
+        alert('Sorry, try again')
+      }
+      cardsChosen = []
+      cardsChosenId = []
+      resultDisplay.textContent = cardsWon.length
+      if  (cardsWon.length === cardArray.length/2) {
+        resultDisplay.textContent = 'Congratulations! You found them all!'
+      }
     }
-
-    function jump() {
-        if (birdBottom < 500) birdBottom += 50
-        bird.style.bottom = birdBottom + 'px'
-        console.log(birdBottom)
+  
+    //flip your card
+    function flipCard() {
+      let cardId = this.getAttribute('data-id')
+      cardsChosen.push(cardArray[cardId].name)
+      cardsChosenId.push(cardId)
+      this.setAttribute('src', cardArray[cardId].img)
+      if (cardsChosen.length ===2) {
+        setTimeout(checkForMatch, 500)
+      }
     }
-    document.addEventListener('keyup', control)
-
-
-    function generateObstacle() {
-        let obstacleLeft = 500
-        let randomHeight = Math.random() * 60
-        let obstacleBottom = randomHeight
-        const obstacle = document.createElement('div')
-        const topObstacle = document.createElement('div')
-        if (!isGameOver) {
-            obstacle.classList.add('obstacle')
-            topObstacle.classList.add('topObstacle')
-        }
-        gameDisplay.appendChild(obstacle)
-        gameDisplay.appendChild(topObstacle)
-        obstacle.style.left = obstacleLeft + 'px'
-        topObstacle.style.left = obstacleLeft + 'px'
-        obstacle.style.bottom = obstacleBottom + 'px'
-        topObstacle.style.bottom = obstacleBottom + gap + 'px'
-
-        function moveObstacle() {
-            obstacleLeft -=2
-            obstacle.style.left = obstacleLeft + 'px'
-            topObstacle.style.left = obstacleLeft + 'px'
-
-            if (obstacleLeft === -60) {
-                clearInterval(timerId)
-                gameDisplay.removeChild(obstacle)
-                gameDisplay.removeChild(topObstacle)
-            }
-            if (
-                obstacleLeft > 200 && obstacleLeft < 280 && birdLeft === 220 &&
-                (birdBottom < obstacleBottom + 153 || birdBottom > obstacleBottom + gap -200)||
-                birdBottom === 0 
-                ) {
-                gameOver()
-                clearInterval(timerId)
-            }
-        }
-        let timerId = setInterval(moveObstacle, 20) 
-        if (!isGameOver) setTimeout(generateObstacle, 3000)
-
-    }
-    generateObstacle()
-
-
-    function gameOver() {
-        clearInterval(gameTimerId)
-        console.log('game over')
-        isGameOver = true
-        document.removeEventListener('keyup', control)
-        ground.classList.add('ground')
-        ground.classList.remove('ground-moving')
-    }
-
-
-})
+  
+    createBoard()
+  })

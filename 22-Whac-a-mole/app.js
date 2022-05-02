@@ -1,87 +1,50 @@
-document.addEventListener('DOMContentLoaded' , () => {
-    const bird = document.querySelector('.bird')
-    const gameDisplay = document.querySelector('.game-container')
-    const ground = document.querySelector('.ground-moving')
+const squares = document.querySelectorAll('.square')
+const mole = document.querySelector('.mole')
+const timeLeft = document.querySelector('#time-left')
+const score = document.querySelector('#score')
 
-    let birdLeft = 220
-    let birdBottom = 100
-    let gravity = 3
-    let isGameOver = false
-    let gap = 430
+let result = 0
+let hitPosition
+let currentTime = 60
+let timerId = null
 
+function randomSquare() {
+  squares.forEach(square => {
+    square.classList.remove('mole')
+  })
 
-    function startGame() {
-        birdBottom -= gravity
-        bird.style.bottom = birdBottom + 'px'
-        bird.style.left = birdLeft + 'px'
+  let randomSquare = squares[Math.floor(Math.random() * 9)]
+  randomSquare.classList.add('mole')
+
+  hitPosition = randomSquare.id
+}
+
+squares.forEach(square => {
+  square.addEventListener('mousedown', () => {
+    if (square.id == hitPosition) {
+      result++
+      score.textContent = result
+      hitPosition = null
     }
-    let gameTimerId = setInterval(startGame, 20)
-
-    function control(e) {
-        if (e.keyCode === 32) {
-            jump()
-        }
-    }
-
-    function jump() {
-        if (birdBottom < 500) birdBottom += 50
-        bird.style.bottom = birdBottom + 'px'
-        console.log(birdBottom)
-    }
-    document.addEventListener('keyup', control)
-
-
-    function generateObstacle() {
-        let obstacleLeft = 500
-        let randomHeight = Math.random() * 60
-        let obstacleBottom = randomHeight
-        const obstacle = document.createElement('div')
-        const topObstacle = document.createElement('div')
-        if (!isGameOver) {
-            obstacle.classList.add('obstacle')
-            topObstacle.classList.add('topObstacle')
-        }
-        gameDisplay.appendChild(obstacle)
-        gameDisplay.appendChild(topObstacle)
-        obstacle.style.left = obstacleLeft + 'px'
-        topObstacle.style.left = obstacleLeft + 'px'
-        obstacle.style.bottom = obstacleBottom + 'px'
-        topObstacle.style.bottom = obstacleBottom + gap + 'px'
-
-        function moveObstacle() {
-            obstacleLeft -=2
-            obstacle.style.left = obstacleLeft + 'px'
-            topObstacle.style.left = obstacleLeft + 'px'
-
-            if (obstacleLeft === -60) {
-                clearInterval(timerId)
-                gameDisplay.removeChild(obstacle)
-                gameDisplay.removeChild(topObstacle)
-            }
-            if (
-                obstacleLeft > 200 && obstacleLeft < 280 && birdLeft === 220 &&
-                (birdBottom < obstacleBottom + 153 || birdBottom > obstacleBottom + gap -200)||
-                birdBottom === 0 
-                ) {
-                gameOver()
-                clearInterval(timerId)
-            }
-        }
-        let timerId = setInterval(moveObstacle, 20) 
-        if (!isGameOver) setTimeout(generateObstacle, 3000)
-
-    }
-    generateObstacle()
-
-
-    function gameOver() {
-        clearInterval(gameTimerId)
-        console.log('game over')
-        isGameOver = true
-        document.removeEventListener('keyup', control)
-        ground.classList.add('ground')
-        ground.classList.remove('ground-moving')
-    }
-
-
+  })
 })
+
+function moveMole() {
+  timerId = setInterval(randomSquare, 500)
+}
+
+moveMole()
+
+function countDown() {
+ currentTime--
+ timeLeft.textContent = currentTime
+
+ if (currentTime == 0) {
+   clearInterval(countDownTimerId)
+   clearInterval(timerId)
+   alert('GAME OVER! Your final score is ' + result)
+ }
+
+}
+
+let countDownTimerId = setInterval(countDown, 1000)

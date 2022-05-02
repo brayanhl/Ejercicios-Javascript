@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8>" />
+    <title>Piedra, papel o tijeras</title>
+    <link rel="stylesheet" href="./styles.css" type="text/css" />
+  </head>
+  <body>
+    <header><h1>¡Piedra, papel o tijeras!</h1></header>
+
+    <div class="score-board">
+      <div id="user-label" class="badge">user</div>
+      <div id="computer-label" class="badge">comp</div>
+      <span id="user-score">0</span> : <span id="computer-score">0</span>
+    </div>
+
+    <div class="result"><p>Paper covers rock. You win!</p></div>
+
+    <div class="choices">
+      <div id="rock" class="choice">
+        <img
+          width="48"
+          height="48"
+          src="images/rock.png"/>
+      </div>
+      <div id="paper" class="choice">
+        <img
+          width="48"
+          height="48"
+          src="images/paper.png"/>
+      </div>
+      <div id="scissors" class="choice">
+        <img
+          width="48"
+          height="48"
+          src="images/scissors.png"/>
+      </div>
+
+      <p id="action-message">Make your move.</p>
+    </div>
+    <script src="app.js" type="text/javascript"></script>
+  </body>
+</html>
